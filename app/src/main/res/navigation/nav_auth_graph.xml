@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/signInFragment"
+    >
+
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.cookbook.app.view.fragments.SignInFragment"
+        android:label="Sign In"
+        tools:layout="@layout/fragment_sign_in">
+        <action
+            android:id="@+id/action_signin_to_signup"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/signInFragment"
+            app:destination="@id/signupFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/signupFragment"
+        android:name="com.cookbook.app.view.fragments.SignUpFragment"
+        android:label="Signup"
+        tools:layout="@layout/fragment_sign_up">
+        <action
+            android:id="@+id/action_signup_to_signin"
+            app:popUpTo="@id/signupFragment"
+            app:popUpToInclusive="true"
+            app:destination="@id/signInFragment" />
+    </fragment>
+
+</navigation>
