@@ -11,4 +11,8 @@
     <string name="name">Name</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="you_already_have_an_account">You have already account?</string>
+    <string name="add_recipe">add recipe</string>
+    <string name="feed">Feed</string>
+    <string name="map">Map</string>
+    <string name="profile">Profile</string>
 </resources>
