@@ -3,8 +3,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.ProfileFragment">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/tenDpMargin"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/smallPadding"
+        android:layout_marginStart="@dimen/sixtyDpMargin"
+        android:layout_marginEnd="@dimen/sixtyDpMargin"
+        >
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/sixtyDpMargin"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_gravity="center"
+                android:src="@drawable/placeholder"
+                android:id="@+id/profile_image"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/primary"
+                />
+        </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_input_box_design"
+            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+            android:enabled="false"
+            android:inputType="text"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="@dimen/mediumTextSize" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_input_box_design"
+            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+            android:enabled="false"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="@dimen/mediumTextSize" />
+
+       <androidx.appcompat.widget.LinearLayoutCompat
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+           >
+
+           <com.google.android.material.button.MaterialButton
+               android:id="@+id/edit_btn"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:text="@string/edit"
+               android:layout_margin="@dimen/defaultDpMargin"
+               android:textSize="@dimen/largeTextSize"
+               app:backgroundTint="@color/primary" />
+
+           <com.google.android.material.button.MaterialButton
+               android:id="@+id/logout_btn"
+               android:layout_width="0dp"
+               android:layout_height="wrap_content"
+               android:layout_weight="1"
+               android:layout_margin="@dimen/defaultDpMargin"
+               android:text="@string/logout"
+               android:textSize="@dimen/largeTextSize"
+               app:backgroundTint="@color/primary" />
+       </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

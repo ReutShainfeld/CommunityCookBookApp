@@ -34,7 +34,7 @@ class AuthActivity : AppCompatActivity(), OnFragmentChangeListener {
         return navController!!.navigateUp() || super.onSupportNavigateUp()
     }
 
-    override fun navigateToFragment(fragmentId: Int, popUpId: Int) {
+    override fun navigateToFragment(fragmentId: Int, popUpId: Int,args: Bundle?) {
         navController!!.navigate(fragmentId)
     }
 }

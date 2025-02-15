@@ -35,8 +35,6 @@
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_profile_to_editProfile"
-            app:popUpToInclusive="true"
-            app:popUpTo="@id/profileFragment"
             app:destination="@id/editProfileFragment" />
     </fragment>
 

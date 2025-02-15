@@ -3,8 +3,91 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.fragments.EditProfileFragment">
 
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/smallPadding"
+        android:layout_marginStart="@dimen/sixtyDpMargin"
+        android:layout_marginEnd="@dimen/sixtyDpMargin"
+        >
 
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/login_heading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/eightDpMargin"
+            android:text="@string/profile_update"
+            android:layout_marginTop="@dimen/sixtyDpMargin"
+            android:textSize="@dimen/largeTextSize" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+            >
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_gravity="center"
+                android:src="@drawable/placeholder"
+                android:id="@+id/profile_image"
+                app:civ_border_width="1dp"
+                app:civ_border_color="@color/primary"
+                />
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                app:tint="@color/primary"
+                android:src="@drawable/ic_camera_alt_outline"
+                android:layout_gravity="center"
+                android:id="@+id/upload_image_btn"
+                />
+        </FrameLayout>
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_input_box_design"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+            android:hint="@string/name"
+            android:inputType="text"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="@dimen/mediumTextSize" />
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/text_input_box_design"
+            android:layout_marginTop="@dimen/sixtyDpMargin"
+            android:gravity="center_horizontal"
+            android:hint="@string/email"
+            android:visibility="gone"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/black"
+            android:textColorHint="@color/black"
+            android:textSize="@dimen/mediumTextSize" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/update_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/thirtyTwoDpMargin"
+            android:text="@string/update"
+            android:textSize="@dimen/largeTextSize"
+            app:backgroundTint="@color/primary" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

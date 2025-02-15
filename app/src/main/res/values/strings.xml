@@ -15,4 +15,8 @@
     <string name="feed">Feed</string>
     <string name="map">Map</string>
     <string name="profile">Profile</string>
+    <string name="edit">Edit</string>
+    <string name="logout">Logout</string>
+    <string name="update">Update</string>
+    <string name="profile_update">Update Details</string>
 </resources>

@@ -7,6 +7,7 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavArgs
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
@@ -53,8 +54,8 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
         }
     }
 
-    override fun navigateToFragment(fragmentId: Int, popUpId: Int) {
-        navController.navigate(fragmentId)
+    override fun navigateToFragment(fragmentId: Int, popUpId: Int,args: Bundle?) {
+        navController.navigate(fragmentId,args)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -64,6 +65,9 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.add){
+        }
+        else if (item.itemId == android.R.id.home){
+            navController.popBackStack()
         }
         return super.onOptionsItemSelected(item)
     }
