@@ -1,6 +1,8 @@
 package com.cookbook.app.firebase
 
+import android.content.Context
 import android.net.Uri
+import com.cookbook.app.model.Recipe
 import com.cookbook.app.model.User
 
 interface FirebaseRepository {
@@ -13,5 +15,7 @@ interface FirebaseRepository {
     fun getLoggedUserId():String
     fun fetchUserDetails(id:String)
     fun logout()
+    fun addRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
+    fun getRecipeId():String
 
 }

@@ -20,4 +20,11 @@
     <string name="update">Update</string>
     <string name="profile_update">Update Details</string>
     <string name="google_map_api_key">AIzaSyAoHXNlct7AHCY0d7YgMvavHQanhkYX8PQ</string>
+    <string name="location">Location</string>
+    <string name="description">Description</string>
+    <string name="title">Title</string>
+    <string name="attach_recipe_image">Attche Recipe Image</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="save">Save</string>
+    <string name="author_id">Author ID</string>
 </resources>

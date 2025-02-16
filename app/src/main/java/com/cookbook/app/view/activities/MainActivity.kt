@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
     private val authViewModel: AuthViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
+    var mainMenu:Menu?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
         setupActionBarWithNavController(navController, AppBarConfiguration(navController.graph))
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
+            mainMenu?.findItem(R.id.add)?.isVisible = destination.id != R.id.addRecipeFragment
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_arrow)
         }
     }
@@ -60,11 +62,13 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu,menu)
+        mainMenu = menu
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.add){
+            navigateToFragment(R.id.action_home_to_add_recipe)
         }
         else if (item.itemId == android.R.id.home){
             navController.popBackStack()

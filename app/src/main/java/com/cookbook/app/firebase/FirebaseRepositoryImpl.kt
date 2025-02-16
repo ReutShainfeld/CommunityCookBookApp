@@ -1,8 +1,9 @@
 package com.cookbook.app.firebase
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.cookbook.app.firebase.FirebaseRepository
+import com.cookbook.app.model.Recipe
 import com.cookbook.app.model.User
 import com.cookbook.app.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
@@ -15,12 +16,12 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import java.util.UUID
 import javax.inject.Inject
 
 class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth, private val firebaseFireStore: FirebaseFirestore) :
     FirebaseRepository {
     private val usersRef: CollectionReference = firebaseFireStore.collection("USERS")
+    private val recipeRef: CollectionReference = firebaseFireStore.collection("RECIPES")
     override fun signUp(email: String, password: String, callback: (Boolean, String?) -> Unit) {
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -60,7 +61,7 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
     override fun saveUserData(user: User, imageUri: Uri) {
         val userId = auth.currentUser?.uid
         user.userId = userId!!
-        uploadImageToFirebaseStorage(imageUri,userId) { success, downloadUrl ->
+        uploadUserImageToFirebaseStorage(imageUri,userId) { success, downloadUrl ->
             if (success) {
                 user.profileImageUrl = downloadUrl
                 usersRef.document(userId).set(user)
@@ -84,7 +85,7 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
         val storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUrl!!)
         storageRef.delete()
             .addOnSuccessListener {
-                uploadImageToFirebaseStorage(imageUri,userId) { success, downloadUrl ->
+                uploadUserImageToFirebaseStorage(imageUri,userId) { success, downloadUrl ->
                     if (success) {
                         user.profileImageUrl = downloadUrl
                         usersRef.document(userId).update(mapOf(
@@ -130,7 +131,43 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
         auth.signOut()
     }
 
-    private fun uploadImageToFirebaseStorage(imageUri: Uri,userId:String, callback: (Boolean, String?) -> Unit) {
+    override fun addRecipeToFireStore(
+        context: Context,
+        recipe: Recipe,
+        callback: (Boolean, String?,Recipe?) -> Unit
+    ) {
+        uploadRecipeImageToFirebaseStorage(recipe.imageUri, recipe.recipeId) { success, imageUrl ->
+            if (success && imageUrl != null) {
+                recipe.imageUrl = imageUrl
+
+                recipeRef.document(recipe.recipeId).set(recipe)
+                    .addOnSuccessListener {
+                        callback(true, "Recipe added successfully",recipe)
+                    }
+                    .addOnFailureListener { exception ->
+                        callback(false, exception.localizedMessage,null)
+                    }
+            }
+            else if (!success && imageUrl == null) {
+                recipeRef.document(recipe.recipeId).set(recipe)
+                    .addOnSuccessListener {
+                        callback(true, "Recipe added successfully",recipe)
+                    }
+                    .addOnFailureListener { exception ->
+                        callback(false, exception.localizedMessage,null)
+                    }
+            }
+            else {
+                callback(false, "Failed to upload image: $imageUrl",null)
+            }
+        }
+    }
+
+    override fun getRecipeId(): String {
+        return recipeRef.document().id
+    }
+
+    private fun uploadUserImageToFirebaseStorage(imageUri: Uri, userId:String, callback: (Boolean, String?) -> Unit) {
         val storageReference: StorageReference = FirebaseStorage.getInstance().reference
         val uniqueFileName = "images/users/${userId}/profile.jpg" // Unique file path in the storage
         val imageRef = storageReference.child(uniqueFileName)
@@ -146,6 +183,30 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
             .addOnFailureListener { exception ->
                 callback(false, exception.message)
             }
+    }
+
+    private fun uploadRecipeImageToFirebaseStorage(imageUri: Uri?,recipeId:String, callback: (Boolean, String?) -> Unit) {
+        if (imageUri == null){
+            callback(false, null)
+        }
+        else{
+            val storageReference: StorageReference = FirebaseStorage.getInstance().reference
+            val uniqueFileName = "images/recipes/${recipeId}/image.jpg" // Unique file path in the storage
+            val imageRef = storageReference.child(uniqueFileName)
+
+            imageRef.putFile(imageUri)
+                .addOnSuccessListener { taskSnapshot ->
+                    imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
+                        callback(true, downloadUri.toString())
+                    }.addOnFailureListener { exception ->
+                        callback(false, exception.message)
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    callback(false, exception.message)
+                }
+        }
+
     }
 
     private fun getFirebaseErrorMessage(exception: Exception?): String {

@@ -28,7 +28,7 @@ object DatabaseModule {
         Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "local_event_hub_database"
+            "recipes_database"
         )
             .build()
 

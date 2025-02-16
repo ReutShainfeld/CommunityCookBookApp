@@ -9,6 +9,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.cookbook.app.R
 import com.cookbook.app.viewmodel.AuthViewModel
+import com.cookbook.app.viewmodel.RecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("CustomSplashScreen")
@@ -16,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
     private val authViewModel: AuthViewModel by viewModels()
+    private val recipeViewModel: RecipeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +35,6 @@ class SplashActivity : AppCompatActivity() {
                 }
             }
         },1000)
-
+        recipeViewModel.syncOfflineRecipes(applicationContext)
     }
 }

@@ -18,6 +18,10 @@
             android:id="@+id/action_home_to_profile"
             app:destination="@id/profileFragment" />
 
+        <action
+            android:id="@+id/action_home_to_add_recipe"
+            app:destination="@id/addRecipeFragment" />
+
     </fragment>
 
     <fragment
@@ -26,6 +30,13 @@
         android:label="Map"
         tools:layout="@layout/fragment_map" >
    </fragment>
+
+    <fragment
+        android:id="@+id/addRecipeFragment"
+        android:name="com.cookbook.app.view.fragments.AddRecipeFragment"
+        android:label="Add Recipe"
+        tools:layout="@layout/fragment_add_recipe" >
+    </fragment>
 
 
     <fragment
