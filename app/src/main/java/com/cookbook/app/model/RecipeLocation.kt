@@ -9,4 +9,12 @@ data class RecipeLocation(
     @ColumnInfo(name = "address") val address: String? // Optional address
 ): Serializable{
     constructor():this(0.0,0.0,"")
+
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "latitude" to latitude,
+            "longitude" to longitude,
+            "address" to address
+        )
+    }
 }

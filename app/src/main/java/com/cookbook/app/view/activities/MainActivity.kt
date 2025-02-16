@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
         setupActionBarWithNavController(navController, AppBarConfiguration(navController.graph))
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
-            mainMenu?.findItem(R.id.add)?.isVisible = destination.id != R.id.addRecipeFragment
+            mainMenu?.findItem(R.id.add)?.isVisible = destination.id == R.id.feedFragment
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_arrow)
         }
     }

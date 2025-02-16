@@ -15,7 +15,7 @@ interface FirebaseRepository {
     fun getLoggedUserId():String
     fun fetchUserDetails(id:String)
     fun logout()
-    fun addRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
     fun getRecipeId():String
-
+    fun addRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
+    fun updateRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
 }

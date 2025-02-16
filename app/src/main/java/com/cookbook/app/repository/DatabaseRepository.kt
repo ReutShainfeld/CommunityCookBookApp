@@ -2,6 +2,7 @@ package com.cookbook.app.repository
 
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import com.cookbook.app.firebase.FirebaseRepository
 import com.cookbook.app.model.Recipe
 import com.cookbook.app.room.AppDao
@@ -15,6 +16,13 @@ import javax.inject.Inject
 
 class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                                              private val firebaseRepository: FirebaseRepository, private val appDao: AppDao) {
+
+
+    fun getAllRecipes(callback: (List<Recipe>) -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            callback(appDao.getAllRecipes())
+        }
+    }
 
     fun getRecipeId():String{
         return firebaseRepository.getRecipeId()
@@ -36,6 +44,44 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                                     delay(1000)
                                     if (recipe.imageUrl != null){
                                        appDao.updateRecipeImage(recipe.recipeId,recipe.imageUrl!!)
+                                    }
+                                }
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    callback(true, message)
+                                }
+                            }
+                        }
+                        else{
+                            callback(false, message)
+                        }
+                    }
+                } else {
+                    callback(true, "Saved locally, will sync when online")
+                }
+            } catch (e: Exception) {
+                callback(false, e.localizedMessage)
+            }
+        }
+    }
+
+    fun updateRecipe(context: Context,recipe: Recipe, callback: (Boolean, String?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                appDao.updateRecipe(recipe)
+
+                if (NetworkUtils.isOnline(context)) {
+                    firebaseRepository.updateRecipeToFireStore(context,recipe) { success, message,recipe ->
+                        if (success) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                if (recipe != null){
+                                    if (!recipe.isSynced){
+                                        appDao.updateRecipeSyncStatus(
+                                            recipe.recipeId
+                                        )
+                                    }
+                                    delay(1000)
+                                    if (recipe.imageUrl != null){
+                                        appDao.updateRecipeImage(recipe.recipeId,recipe.imageUrl!!)
                                     }
                                 }
                                 CoroutineScope(Dispatchers.Main).launch {

@@ -163,6 +163,38 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
         }
     }
 
+    override fun updateRecipeToFireStore(
+        context: Context,
+        recipe: Recipe,
+        callback: (Boolean, String?, Recipe?) -> Unit
+    ) {
+        uploadRecipeImageToFirebaseStorage(recipe.imageUri, recipe.recipeId) { success, imageUrl ->
+            if (success && imageUrl != null) {
+                recipe.imageUrl = imageUrl
+
+                recipeRef.document(recipe.recipeId).update(recipe.toMap())
+                    .addOnSuccessListener {
+                        callback(true, "Recipe detail updated successfully",recipe)
+                    }
+                    .addOnFailureListener { exception ->
+                        callback(false, exception.localizedMessage,null)
+                    }
+            }
+            else if (!success && imageUrl == null) {
+                recipeRef.document(recipe.recipeId).update(recipe.toMap())
+                    .addOnSuccessListener {
+                        callback(true, "Recipe details updated successfully",recipe)
+                    }
+                    .addOnFailureListener { exception ->
+                        callback(false, exception.localizedMessage,null)
+                    }
+            }
+            else {
+                callback(false, "Failed to upload image: $imageUrl",null)
+            }
+        }
+    }
+
     override fun getRecipeId(): String {
         return recipeRef.document().id
     }

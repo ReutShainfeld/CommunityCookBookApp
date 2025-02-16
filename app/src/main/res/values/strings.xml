@@ -27,4 +27,7 @@
     <string name="ingredients">Ingredients</string>
     <string name="save">Save</string>
     <string name="author_id">Author ID</string>
+    <string name="view">View</string>
+    <string name="delete">Delete</string>
+    <string name="recipe_empty_message">There is no recipe yet!</string>
 </resources>

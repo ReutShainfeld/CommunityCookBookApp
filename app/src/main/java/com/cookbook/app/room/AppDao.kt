@@ -1,5 +1,6 @@
 package com.cookbook.app.room
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -21,5 +22,11 @@ interface AppDao {
 
     @Query("UPDATE recipes SET image_url = :url WHERE recipe_id = :recipeId")
     suspend fun updateRecipeImage(recipeId: String,url:String)
+
+    @Query("SELECT * FROM recipes")
+    fun getAllRecipes(): List<Recipe>
+
+    @Update
+    suspend fun updateRecipe(recipe: Recipe)
 
 }

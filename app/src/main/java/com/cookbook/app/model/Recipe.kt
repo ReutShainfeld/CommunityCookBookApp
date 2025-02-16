@@ -25,4 +25,20 @@ data class Recipe(
 ): Serializable{
     constructor():this("","","","","","","",RecipeLocation(0.0,0.0,""))
     @Ignore var imageUri:Uri?=null
+
+    fun toMap(): Map<String, Any?> {
+        return mapOf(
+            "recipe_id" to recipeId,
+            "user_id" to userId,
+            "title" to title,
+            "description" to description,
+            "ingredients" to ingredients,
+            "author_id" to authorId,
+            "image_url" to imageUrl,
+            "location" to location?.toMap(), // Convert embedded object to Map
+            "timestamp" to timestamp,
+            "is_synced" to isSynced,
+            "user" to user?.toMap() // Convert User object to Map
+        )
+    }
 }

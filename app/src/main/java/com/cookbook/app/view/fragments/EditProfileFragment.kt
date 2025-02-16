@@ -68,7 +68,8 @@ class EditProfileFragment : Fragment() {
         if (user != null) {
             Picasso.get().load(user?.profileImageUrl)
                 .transform(ExifTransformation(user?.profileImageUrl!!))
-                .placeholder(R.drawable.placeholder)
+                .placeholder(R.drawable.loader)
+                .error(R.drawable.placeholder)
                 .into(binding.profileImage)
             binding.name.setText(user?.name)
         }
