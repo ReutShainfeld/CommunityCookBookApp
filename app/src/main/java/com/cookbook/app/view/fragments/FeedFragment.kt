@@ -15,6 +15,7 @@ import com.cookbook.app.adapters.RecipeAdapter
 import com.cookbook.app.databinding.FragmentFeedBinding
 import com.cookbook.app.interaces.OnFragmentChangeListener
 import com.cookbook.app.model.Recipe
+import com.cookbook.app.utils.Constants
 import com.cookbook.app.viewmodel.RecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -102,6 +103,25 @@ class FeedFragment : Fragment() {
                     .setMessage("Are you sure you want to delete?")
                     .setPositiveButton("Delete") { dialog, which ->
                         dialog.dismiss()
+                        Constants.startLoading(requireActivity())
+                        recipeViewModel.deleteRecipe(requireActivity(),recipe.recipeId) { status, message ->
+                            Constants.dismiss()
+                            if (status) {
+                                recipesList.removeAt(position)
+                                 recipeAdapter.updateRecipes(recipesList)
+                                if (recipesList.isEmpty()){
+                                    binding.recipesRecyclerview.apply {
+                                        visibility = View.GONE
+                                    }
+                                    binding.emptyRecipeView.apply {
+                                        visibility = View.VISIBLE
+                                    }
+                                }
+                                Constants.showAlert(requireActivity(), message!!)
+                            } else {
+                                Constants.showAlert(requireActivity(), message!!)
+                            }
+                        }
                     }
                     .setNeutralButton("Cancel") { dialog, which ->
                         dialog.dismiss()

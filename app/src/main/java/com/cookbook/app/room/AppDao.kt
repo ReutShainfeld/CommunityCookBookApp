@@ -29,4 +29,7 @@ interface AppDao {
     @Update
     suspend fun updateRecipe(recipe: Recipe)
 
+    @Query("DELETE FROM recipes WHERE recipe_id = :recipeId")
+    suspend fun deleteRecipe(recipeId: String)
+
 }

@@ -88,6 +88,15 @@ class RecipeDetailFragment : Fragment() {
                         .setMessage("Are you sure you want to delete?")
                         .setPositiveButton("Delete"){dialog,which->
                             dialog.dismiss()
+                            recipeViewModel.deleteRecipe(requireActivity(),item.recipeId){status,message->
+                                if (status){
+                                    Constants.showAlert(requireActivity(),message!!
+                                    ) { p0, p1 -> findNavController().popBackStack()}
+                                }
+                                else{
+                                    Constants.showAlert(requireActivity(),message!!)
+                                }
+                            }
                         }
                         .setNeutralButton("Cancel"){dialog,which->
                             dialog.dismiss()

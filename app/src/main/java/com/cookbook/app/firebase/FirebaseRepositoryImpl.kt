@@ -195,6 +195,19 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
         }
     }
 
+    override fun deleteRecipeFromFireStore(recipeId: String, callback: (Boolean, String?) -> Unit) {
+        val firestore = FirebaseFirestore.getInstance()
+        firestore.collection("recipes")
+            .document(recipeId)
+            .delete()
+            .addOnSuccessListener {
+                callback(true, "Recipe deleted successfully!")
+            }
+            .addOnFailureListener { exception ->
+                callback(false, exception.message)
+            }
+    }
+
     override fun getRecipeId(): String {
         return recipeRef.document().id
     }

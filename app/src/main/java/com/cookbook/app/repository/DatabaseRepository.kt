@@ -46,9 +46,9 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                                        appDao.updateRecipeImage(recipe.recipeId,recipe.imageUrl!!)
                                     }
                                 }
-                                CoroutineScope(Dispatchers.Main).launch {
+//                                CoroutineScope(Dispatchers.Main).launch {
                                     callback(true, message)
-                                }
+//                                }
                             }
                         }
                         else{
@@ -84,9 +84,9 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                                         appDao.updateRecipeImage(recipe.recipeId,recipe.imageUrl!!)
                                     }
                                 }
-                                CoroutineScope(Dispatchers.Main).launch {
+//                                CoroutineScope(Dispatchers.Main).launch {
                                     callback(true, message)
-                                }
+//                                }
                             }
                         }
                         else{
@@ -94,7 +94,31 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                         }
                     }
                 } else {
-                    callback(true, "Saved locally, will sync when online")
+                    callback(true, "updated locally, will sync when online")
+                }
+            } catch (e: Exception) {
+                callback(false, e.localizedMessage)
+            }
+        }
+    }
+
+    fun deleteRecipe(context: Context,recipeId: String, callback: (Boolean, String?) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                if (NetworkUtils.isOnline(context)) {
+                    firebaseRepository.deleteRecipeFromFireStore(recipeId) { success, message ->
+                        if (success) {
+                            CoroutineScope(Dispatchers.IO).launch {
+                                appDao.deleteRecipe(recipeId)
+                                callback(success,message)
+                            }
+                        }
+                        else{
+                            callback(false, message)
+                        }
+                    }
+                } else {
+                    callback(true, "delete locally, will sync when online")
                 }
             } catch (e: Exception) {
                 callback(false, e.localizedMessage)

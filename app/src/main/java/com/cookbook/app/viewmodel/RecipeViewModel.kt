@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.cookbook.app.model.Recipe
 import com.cookbook.app.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,13 +37,25 @@ class RecipeViewModel @Inject constructor(
 
     fun addRecipe(context: Context,recipe: Recipe,callback: (Boolean, String?) -> Unit) {
         databaseRepository.addRecipe(context,recipe) { success, message ->
-           callback(success,message)
+            CoroutineScope(Dispatchers.Main).launch {
+                callback(success,message)
+            }
         }
     }
 
     fun updateRecipe(context: Context,recipe: Recipe,callback: (Boolean, String?) -> Unit) {
         databaseRepository.updateRecipe(context,recipe) { success, message ->
-            callback(success,message)
+            CoroutineScope(Dispatchers.Main).launch {
+                callback(success,message)
+            }
+        }
+    }
+
+    fun deleteRecipe(context: Context,recipeId: String,callback: (Boolean, String?) -> Unit) {
+        databaseRepository.deleteRecipe(context,recipeId) { success, message ->
+            CoroutineScope(Dispatchers.Main).launch {
+                callback(success,message)
+            }
         }
     }
 
