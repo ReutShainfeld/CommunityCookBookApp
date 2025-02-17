@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    tools:context=".view.fragments.RecipeDetailFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="@dimen/eightDpMargin"
+            android:orientation="vertical"
+            >
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/eightDpMargin"
+                >
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/placeholder"
+                    android:id="@+id/user_image"
+                    />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="@dimen/eightDpMargin"
+                    >
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/user_name"
+
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:textSize="@dimen/mediumTextSize"
+                        />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/dark_gray"
+                        android:textSize="@dimen/smallTextSize"
+                        android:id="@+id/recipe_date"
+                        />
+                </LinearLayout>
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_more"
+                    app:tint="@color/black"
+                    android:id="@+id/recipe_more_option"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:id="@+id/recipe_image"
+                android:src="@drawable/placeholder"
+                android:scaleType="fitCenter"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_title"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/largeTextSize"
+                android:textStyle="bold"
+                />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_ingredients"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/mediumTextSize"
+                android:maxLines="3"
+                android:ellipsize="end"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_description"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/mediumTextSize"
+                android:maxLines="5"
+                android:ellipsize="end"
+                />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

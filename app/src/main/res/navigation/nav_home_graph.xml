@@ -26,6 +26,10 @@
             android:id="@+id/action_home_to_edit_recipe"
             app:destination="@id/editRecipeFragment" />
 
+        <action
+            android:id="@+id/action_home_to_recipe_detail"
+            app:destination="@id/recipeDetailFragment" />
+
     </fragment>
 
     <fragment
@@ -47,6 +51,17 @@
         android:name="com.cookbook.app.view.fragments.EditRecipeFragment"
         android:label="Update Recipe Details"
         tools:layout="@layout/fragment_edit_recipe" >
+    </fragment>
+
+    <fragment
+        android:id="@+id/recipeDetailFragment"
+        android:name="com.cookbook.app.view.fragments.RecipeDetailFragment"
+        android:label="Recipe Details"
+        tools:layout="@layout/fragment_recipe_detail" >
+
+        <action
+            android:id="@+id/action_detail_to_edit_recipe"
+            app:destination="@id/editRecipeFragment" />
     </fragment>
 
     <fragment

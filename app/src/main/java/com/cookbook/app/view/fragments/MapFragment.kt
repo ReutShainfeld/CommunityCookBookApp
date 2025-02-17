@@ -5,15 +5,18 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.cookbook.app.R
 import com.cookbook.app.databinding.FragmentMapBinding
+import com.cookbook.app.model.Recipe
+import com.cookbook.app.viewmodel.RecipeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -31,6 +34,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var binding: FragmentMapBinding
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val recipeViewModel: RecipeViewModel by viewModels()
+    private var recipes = mutableListOf<Recipe>()
 
 
     private val requestPermissionLauncher =
@@ -57,7 +62,49 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+//        recipeViewModel.loadRecipes(Constants.isOnline(requireActivity()))
+//        viewLifecycleOwner.lifecycleScope.launch {
+//            recipeViewModel.recipes.collect { postList ->
+//                if (postList.isNotEmpty()){
+//                    posts.clear()
+//                    posts.addAll(postList)
+//                    delay(2000)
+//                    if (isAdded) { // Ensure the fragment is attached
+//                        showMarkersOnMap()
+//                    }
+//                }
+//            }
+//        }
 
+    }
+
+    private fun showMarkersOnMap() {
+        if (recipes.isNotEmpty()) {
+            if(isAdded){
+                requireActivity().runOnUiThread {
+                    for (recipe in recipes) {
+                        val latLng = LatLng(recipe.location!!.latitude, recipe.location!!.longitude)
+                        val marker = googleMap.addMarker(
+                            MarkerOptions()
+                                .position(latLng)
+                                .title("Recipe at ${recipe.location!!.latitude}, ${recipe.location!!.longitude}")
+                        )
+                        marker?.tag = recipe
+                    }
+
+                    googleMap.setOnMarkerClickListener { marker ->
+                        val post = marker.tag as? Recipe
+                        if (post != null) {
+                            val bundle = Bundle().apply {
+                                putSerializable("post", post)
+                            }
+//                            findNavController().navigate(R.id.action_map_to_recipeDetails, bundle)
+                        }
+                        true
+                    }
+                }
+            }
+        }
     }
 
     override fun onMapReady(map: GoogleMap) {

@@ -83,7 +83,10 @@ class FeedFragment : Fragment() {
 
         recipeAdapter.setOnItemClickListener(object : RecipeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, recipe: Recipe) {
-
+                val bundle = Bundle().apply {
+                    putSerializable("recipe", recipe)
+                }
+                findNavController().navigate(R.id.action_home_to_recipe_detail, bundle)
             }
 
             override fun onItemEditClick(position: Int, recipe: Recipe) {
