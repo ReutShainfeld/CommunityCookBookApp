@@ -2,6 +2,7 @@ package com.cookbook.app.repository
 
 
 import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import com.cookbook.app.firebase.FirebaseRepository
 import com.cookbook.app.model.Recipe
@@ -143,6 +144,30 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
                         }
                     }
                 }
+            }
+        }
+    }
+
+    fun syncFireStoreRecipesWithRoom(context: Context,callback: (Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            if (NetworkUtils.isOnline(context)) {
+                firebaseRepository.getAllRecipeFromFireStore() {success, recipes ->
+                    if (success && recipes != null) {
+                        CoroutineScope(Dispatchers.IO).launch {
+                            for (recipe in recipes) {
+                                appDao.insertRecipe(recipe)
+                            }
+                            callback(true)
+                        }
+                    }
+                    else{
+                        callback(true)
+                    }
+                }
+
+            }
+            else{
+                callback(true)
             }
         }
     }

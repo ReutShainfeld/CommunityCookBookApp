@@ -144,7 +144,7 @@ class EditRecipeFragment : Fragment() {
                         it.ingredients = ingredients
                         it.authorId = authorId
                         it.location = recipeLocation
-                        it.imageUri = selectedImageUri
+                        it.imageUri = selectedImageUri.toString()
                     }
                     recipeViewModel.updateRecipe(requireActivity(),recipe!!) { status, message ->
                         Constants.dismiss()

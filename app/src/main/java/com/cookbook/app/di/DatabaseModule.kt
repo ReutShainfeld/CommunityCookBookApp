@@ -30,6 +30,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "recipes_database"
         )
+            .fallbackToDestructiveMigration()
             .build()
 
     @Provides

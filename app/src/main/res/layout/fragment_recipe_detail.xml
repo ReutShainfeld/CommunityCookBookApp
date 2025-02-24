@@ -97,6 +97,56 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/eightDpMargin"
                 android:textColor="@color/primary"
+                android:text="@string/location"
+                android:textSize="@dimen/smallTextSize"
+                android:textStyle="bold"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_location"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/mediumTextSize"
+                android:maxLines="3"
+                android:ellipsize="end"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/primary"
+                android:text="@string/author_id"
+                android:textSize="@dimen/smallTextSize"
+                android:textStyle="bold"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_author_id"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                android:textColor="@color/black"
+                android:textSize="@dimen/mediumTextSize"
+                android:maxLines="3"
+                android:ellipsize="end"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="@dimen/defaultDpMargin"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/primary"
                 android:text="@string/ingredients"
                 android:textSize="@dimen/smallTextSize"
                 android:textStyle="bold"

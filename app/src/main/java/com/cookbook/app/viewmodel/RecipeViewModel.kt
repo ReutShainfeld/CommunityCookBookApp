@@ -65,4 +65,10 @@ class RecipeViewModel @Inject constructor(
         databaseRepository.syncOfflineRecipes(context)
     }
 
+    fun syncFireStoreRecipesWithRoom(context: Context,callback: (Boolean) -> Unit) {
+        databaseRepository.syncFireStoreRecipesWithRoom(context){ success->
+            callback(success)
+        }
+    }
+
 }

@@ -122,7 +122,7 @@ class AddRecipeFragment : Fragment() {
                         imageUrl = null,
                         location = recipeLocation
                     )
-                    recipe.imageUri = selectedImageUri
+                    recipe.imageUri = selectedImageUri.toString()
                     recipeViewModel.addRecipe(requireActivity(),recipe) { status, message ->
                         Constants.dismiss()
                         Constants.showAlert(requireActivity(),message!!

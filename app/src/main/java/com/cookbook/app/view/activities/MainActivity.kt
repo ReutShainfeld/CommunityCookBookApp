@@ -16,14 +16,21 @@ import androidx.navigation.ui.setupWithNavController
 import com.cookbook.app.R
 import com.cookbook.app.databinding.ActivityMainBinding
 import com.cookbook.app.interaces.OnFragmentChangeListener
+import com.cookbook.app.utils.Constants
 import com.cookbook.app.viewmodel.AuthViewModel
+import com.cookbook.app.viewmodel.RecipeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
 
     private lateinit var context: Context
     private val authViewModel: AuthViewModel by viewModels()
+    private val recipeViewModel: RecipeViewModel by viewModels()
     private lateinit var navController: NavController
     private lateinit var binding: ActivityMainBinding
     var mainMenu:Menu?=null
@@ -35,7 +42,12 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
 
         context = this
         authViewModel.fetUserDetails(authViewModel.getLoggedUserId())
-
+        CoroutineScope(Dispatchers.IO).launch {
+            recipeViewModel.syncOfflineRecipes(this@MainActivity)
+            delay(3000)
+            recipeViewModel.syncFireStoreRecipesWithRoom(this@MainActivity){
+            }
+        }
         setUpToolbar()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment_home) as NavHostFragment

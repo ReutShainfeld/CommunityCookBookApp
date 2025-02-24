@@ -101,4 +101,5 @@ dependencies {
     // RETROFIT
     implementation(libs.retrofit)
     implementation(libs.gson)
+    implementation(libs.converter.gson)
 }

@@ -16,6 +16,7 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth, private val firebaseFireStore: FirebaseFirestore) :
@@ -208,6 +209,39 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
             }
     }
 
+    override fun getAllRecipeFromFireStore(callback: (Boolean, List<Recipe>?) -> Unit) {
+        val user = auth.currentUser
+        val userId = user?.uid
+
+        if (userId != null) {
+            recipeRef
+                .whereEqualTo("userId", userId) // Optional: Fetch only user-specific recipes
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    if (!snapshot.isEmpty) {
+                        val recipes = snapshot.documents.mapNotNull { document ->
+                            try {
+                                val recipe = document.toObject(Recipe::class.java)
+                                recipe
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                null // Skip invalid documents
+                            }
+                        }
+                        callback(true, recipes)
+                    } else {
+                        callback(false, null) // No recipes found
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    exception.printStackTrace()
+                    callback(false, null) // Error occurred
+                }
+        } else {
+            callback(false, null) // User not logged in
+        }
+    }
+
     override fun getRecipeId(): String {
         return recipeRef.document().id
     }
@@ -230,7 +264,7 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
             }
     }
 
-    private fun uploadRecipeImageToFirebaseStorage(imageUri: Uri?,recipeId:String, callback: (Boolean, String?) -> Unit) {
+    private fun uploadRecipeImageToFirebaseStorage(imageUri: String?,recipeId:String, callback: (Boolean, String?) -> Unit) {
         if (imageUri == null){
             callback(false, null)
         }
@@ -239,7 +273,7 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
             val uniqueFileName = "images/recipes/${recipeId}/image.jpg" // Unique file path in the storage
             val imageRef = storageReference.child(uniqueFileName)
 
-            imageRef.putFile(imageUri)
+            imageRef.putFile(Uri.parse(imageUri))
                 .addOnSuccessListener { taskSnapshot ->
                     imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
                         callback(true, downloadUri.toString())

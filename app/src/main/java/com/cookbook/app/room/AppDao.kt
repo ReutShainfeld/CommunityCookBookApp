@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.cookbook.app.model.MealRecipe
 import com.cookbook.app.model.Recipe
 
 @Dao
@@ -23,7 +24,7 @@ interface AppDao {
     @Query("UPDATE recipes SET image_url = :url WHERE recipe_id = :recipeId")
     suspend fun updateRecipeImage(recipeId: String,url:String)
 
-    @Query("SELECT * FROM recipes")
+    @Query("SELECT * FROM recipes ORDER BY timestamp desc")
     fun getAllRecipes(): List<Recipe>
 
     @Update
@@ -31,5 +32,11 @@ interface AppDao {
 
     @Query("DELETE FROM recipes WHERE recipe_id = :recipeId")
     suspend fun deleteRecipe(recipeId: String)
+
+    @Query("SELECT * FROM meal_recipes")
+    suspend fun getAllMealRecipes(): List<MealRecipe>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMealRecipes(recipes: List<MealRecipe>)
 
 }

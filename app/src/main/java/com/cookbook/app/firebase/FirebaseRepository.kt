@@ -19,4 +19,5 @@ interface FirebaseRepository {
     fun addRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
     fun updateRecipeToFireStore(context: Context,recipe: Recipe, callback: (Boolean, String?,Recipe?) -> Unit)
     fun deleteRecipeFromFireStore(recipeId: String, callback: (Boolean, String?) -> Unit)
+    fun getAllRecipeFromFireStore(callback: (Boolean, List<Recipe>?) -> Unit)
 }

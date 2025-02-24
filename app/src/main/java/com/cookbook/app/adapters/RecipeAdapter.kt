@@ -81,7 +81,6 @@ class RecipeAdapter(private val recipes: MutableList<Recipe>) :
                 }
 
                 recipeTitle.text = recipe.title
-                recipeIngredients.text = recipe.ingredients
                 recipeDescription.text = recipe.description
             }
         }

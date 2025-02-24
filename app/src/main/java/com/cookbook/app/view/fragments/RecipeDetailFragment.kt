@@ -49,8 +49,9 @@ class RecipeDetailFragment : Fragment() {
                 binding.recipeImage.visibility = View.VISIBLE
                 Picasso.get().load(it.imageUrl).transform(ExifTransformation(it.imageUrl as String)).placeholder(R.drawable.placeholder).into(binding.recipeImage)
             }
-
             binding.recipeTitle.text = it.title
+            binding.recipeLocation.text = it.location?.address
+            binding.recipeAuthorId.text = it.authorId
             binding.recipeDescription.text = it.description
             binding.recipeIngredients.text = it.ingredients
 

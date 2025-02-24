@@ -24,7 +24,7 @@ data class Recipe(
     @ColumnInfo(name = "is_synced") var isSynced: Boolean = false
 ): Serializable{
     constructor():this("","","","","","","",RecipeLocation(0.0,0.0,""))
-    @Ignore var imageUri:Uri?=null
+    @Ignore var imageUri:String?=null
 
     fun toMap(): Map<String, Any?> {
         return mapOf(
@@ -40,5 +40,9 @@ data class Recipe(
             "is_synced" to isSynced,
             "user" to user?.toMap() // Convert User object to Map
         )
+    }
+
+    fun initializeImageUri() {
+        imageUri = null
     }
 }
