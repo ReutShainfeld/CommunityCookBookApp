@@ -20,6 +20,7 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
 
     fun getAllRecipes(callback: (List<Recipe>) -> Unit){
         CoroutineScope(Dispatchers.IO).launch {
+            delay(1000)
             callback(appDao.getAllRecipes())
         }
     }
@@ -31,6 +32,7 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
     fun addRecipe(context: Context,recipe: Recipe, callback: (Boolean, String?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                delay(1000)
                 appDao.insertRecipe(recipe.copy(isSynced = false))
 
                 if (NetworkUtils.isOnline(context)) {
@@ -67,6 +69,7 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
     fun updateRecipe(context: Context,recipe: Recipe, callback: (Boolean, String?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                delay(1000)
                 appDao.updateRecipe(recipe)
 
                 if (NetworkUtils.isOnline(context)) {
@@ -105,6 +108,7 @@ class DatabaseRepository @Inject constructor(private val auth: FirebaseAuth,
     fun deleteRecipe(context: Context,recipeId: String, callback: (Boolean, String?) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
+                delay(1000)
                 if (NetworkUtils.isOnline(context)) {
                     firebaseRepository.deleteRecipeFromFireStore(recipeId) { success, message ->
                         if (success) {

@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/feedFragment"
         android:name="com.cookbook.app.view.fragments.FeedFragment"
-        android:label="Recipes"
+        android:label="@string/app_full_name"
         tools:layout="@layout/fragment_feed">
         <action
             android:id="@+id/action_home_to_map"
@@ -37,6 +37,10 @@
         android:name="com.cookbook.app.view.fragments.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map" >
+
+        <action
+            android:id="@+id/action_map_to_recipe_detail"
+            app:destination="@id/recipeDetailFragment" />
    </fragment>
 
     <fragment

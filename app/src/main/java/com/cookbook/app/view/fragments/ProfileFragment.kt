@@ -44,10 +44,17 @@ class ProfileFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding =  FragmentProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        Constants.startLoading(requireActivity())
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.profileDetailWrapperLayout.visibility = View.GONE
+        binding.loadingSpinner.visibility = View.VISIBLE
         Handler(Looper.getMainLooper()).postDelayed({
-             user = Constants.loggedUser
+            binding.loadingSpinner.visibility = View.GONE
+            binding.profileDetailWrapperLayout.visibility = View.VISIBLE
+            user = Constants.loggedUser
             if (user != null){
                 Picasso.get().load(user!!.profileImageUrl)
                     .transform(ExifTransformation(user!!.profileImageUrl!!))
@@ -58,7 +65,7 @@ class ProfileFragment : Fragment() {
                 binding.email.setText(user!!.email)
                 Constants.dismiss()
             }
-        },2000)
+        },3000)
 
         binding.editBtn.setOnClickListener {
             val bundle = Bundle().apply {
@@ -74,8 +81,7 @@ class ProfileFragment : Fragment() {
             requireActivity().startActivity(intent)
             requireActivity().finish()
         }
-
-        return binding.root
     }
+
 
 }

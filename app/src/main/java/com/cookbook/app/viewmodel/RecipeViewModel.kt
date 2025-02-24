@@ -10,6 +10,7 @@ import com.cookbook.app.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,7 @@ class RecipeViewModel @Inject constructor(
 
     fun fetchAllRecipes() {
         viewModelScope.launch {
+            delay(2000)
             databaseRepository.getAllRecipes(){recipes->
                 _allRecipes.postValue(recipes) // Update LiveData
             }

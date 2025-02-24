@@ -58,6 +58,12 @@ class SignUpFragment : Fragment() {
 
         binding = FragmentSignUpBinding.inflate(inflater, container, false)
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         binding.signupSigninText.setOnClickListener {
             listener?.navigateToFragment(R.id.action_signup_to_signin, R.id.signupFragment)
         }
@@ -91,8 +97,6 @@ class SignUpFragment : Fragment() {
         binding.uploadImageBtn.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
-
-        return binding.root
     }
 
     override fun onDetach() {

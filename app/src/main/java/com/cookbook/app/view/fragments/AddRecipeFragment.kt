@@ -272,4 +272,5 @@ class AddRecipeFragment : Fragment() {
         super.onPause()
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
+
 }

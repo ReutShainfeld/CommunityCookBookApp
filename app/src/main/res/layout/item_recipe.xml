@@ -86,12 +86,20 @@
             android:textSize="@dimen/largeTextSize"
             android:textStyle="bold"
             />
-
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/eightDpMargin"
+            android:textColor="@color/primary"
+            android:text="@string/ingredients"
+            android:textSize="@dimen/smallTextSize"
+            android:textStyle="bold"
+            />
         <com.google.android.material.textview.MaterialTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/recipe_ingredients"
-            android:layout_marginTop="@dimen/eightDpMargin"
+            android:layout_marginTop="@dimen/defaultDpMargin"
             android:textColor="@color/black"
             android:textSize="@dimen/mediumTextSize"
             android:maxLines="3"
@@ -103,11 +111,20 @@
             android:background="@color/light_gray"
             android:layout_marginTop="@dimen/defaultDpMargin"
             />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/eightDpMargin"
+            android:textColor="@color/primary"
+            android:text="@string/description"
+            android:textSize="@dimen/smallTextSize"
+            android:textStyle="bold"
+            />
        <com.google.android.material.textview.MaterialTextView
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:id="@+id/recipe_description"
-           android:layout_marginTop="@dimen/eightDpMargin"
+           android:layout_marginTop="@dimen/defaultDpMargin"
            android:textColor="@color/black"
            android:textSize="@dimen/mediumTextSize"
            android:maxLines="5"

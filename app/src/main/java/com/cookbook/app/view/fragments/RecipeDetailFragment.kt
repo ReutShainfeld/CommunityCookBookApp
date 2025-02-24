@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class RecipeDetailFragment : Fragment() {
 
-    private lateinit var binding:FragmentRecipeDetailBinding
+    private lateinit var binding: FragmentRecipeDetailBinding
     private var recipe:Recipe?=null
     private val recipeViewModel: RecipeViewModel by viewModels()
 
@@ -111,4 +111,5 @@ class RecipeDetailFragment : Fragment() {
 
         popupMenu.show()
     }
+
 }

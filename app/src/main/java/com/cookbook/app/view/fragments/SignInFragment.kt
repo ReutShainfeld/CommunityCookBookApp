@@ -38,6 +38,11 @@ class SignInFragment : Fragment() {
     ): View? {
         binding = FragmentSignInBinding.inflate(layoutInflater, container, false)
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.signinSignupText.setOnClickListener {
             listener?.navigateToFragment(R.id.action_signin_to_signup,R.id.signInFragment)
         }
@@ -62,12 +67,11 @@ class SignInFragment : Fragment() {
                 }
             }
         }
-
-        return binding.root
     }
 
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
+
 }

@@ -60,7 +60,11 @@ class EditProfileFragment : Fragment() {
     ): View? {
 
         binding = FragmentEditProfileBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.uploadImageBtn.setOnClickListener {
             pickImageLauncher.launch("image/*")
         }
@@ -95,13 +99,10 @@ class EditProfileFragment : Fragment() {
                 Constants.showAlert(requireActivity(), "Name input required!")
             }
         }
-
-        return binding.root
     }
 
     override fun onDetach() {
         super.onDetach()
         listener = null
     }
-
 }

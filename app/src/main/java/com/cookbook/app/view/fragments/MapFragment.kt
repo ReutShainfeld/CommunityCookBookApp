@@ -13,9 +13,11 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.cookbook.app.R
 import com.cookbook.app.databinding.FragmentMapBinding
 import com.cookbook.app.model.Recipe
+import com.cookbook.app.utils.Constants
 import com.cookbook.app.viewmodel.RecipeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -35,7 +37,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var googleMap: GoogleMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val recipeViewModel: RecipeViewModel by viewModels()
-    private var recipes = mutableListOf<Recipe>()
+    private var recipesList = mutableListOf<Recipe>()
 
 
     private val requestPermissionLauncher =
@@ -62,27 +64,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-//        recipeViewModel.loadRecipes(Constants.isOnline(requireActivity()))
-//        viewLifecycleOwner.lifecycleScope.launch {
-//            recipeViewModel.recipes.collect { postList ->
-//                if (postList.isNotEmpty()){
-//                    posts.clear()
-//                    posts.addAll(postList)
-//                    delay(2000)
-//                    if (isAdded) { // Ensure the fragment is attached
-//                        showMarkersOnMap()
-//                    }
-//                }
-//            }
-//        }
-
+        Constants.startLoading(requireActivity())
+        recipeViewModel.allRecipes.observe(requireActivity()) { recipes ->
+            if (recipes.isNotEmpty()) {
+                Constants.dismiss()
+                recipesList.clear()
+                recipesList.addAll(recipes)
+            } else {
+                Constants.dismiss()
+            }
+        }
+        recipeViewModel.fetchAllRecipes()
     }
 
     private fun showMarkersOnMap() {
-        if (recipes.isNotEmpty()) {
+        if (recipesList.isNotEmpty()) {
             if(isAdded){
                 requireActivity().runOnUiThread {
-                    for (recipe in recipes) {
+                    for (recipe in recipesList) {
                         val latLng = LatLng(recipe.location!!.latitude, recipe.location!!.longitude)
                         val marker = googleMap.addMarker(
                             MarkerOptions()
@@ -93,12 +92,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
 
                     googleMap.setOnMarkerClickListener { marker ->
-                        val post = marker.tag as? Recipe
-                        if (post != null) {
+                        val recipe = marker.tag as? Recipe
+                        if (recipe != null) {
                             val bundle = Bundle().apply {
-                                putSerializable("post", post)
+                                putSerializable("recipe", recipe)
                             }
-//                            findNavController().navigate(R.id.action_map_to_recipeDetails, bundle)
+                            findNavController().navigate(R.id.action_map_to_recipe_detail, bundle)
                         }
                         true
                     }
@@ -109,7 +108,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
-
         checkLocationPermission()
     }
 
@@ -142,6 +140,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
             }
         }
+
+        if (isAdded) {
+            showMarkersOnMap()
+        }
     }
 
     private fun showPermissionRationale() {
@@ -161,5 +163,4 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             Toast.LENGTH_LONG
         ).show()
     }
-
 }

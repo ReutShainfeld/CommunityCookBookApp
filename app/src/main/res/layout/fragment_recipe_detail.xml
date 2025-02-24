@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
+    android:background="@color/white"
     tools:context=".view.fragments.RecipeDetailFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,8 +95,17 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recipe_ingredients"
                 android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/primary"
+                android:text="@string/ingredients"
+                android:textSize="@dimen/smallTextSize"
+                android:textStyle="bold"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_ingredients"
+                android:layout_marginTop="@dimen/defaultDpMargin"
                 android:textColor="@color/black"
                 android:textSize="@dimen/mediumTextSize"
                 android:maxLines="3"
@@ -110,8 +120,17 @@
             <com.google.android.material.textview.MaterialTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recipe_description"
                 android:layout_marginTop="@dimen/eightDpMargin"
+                android:textColor="@color/primary"
+                android:text="@string/description"
+                android:textSize="@dimen/smallTextSize"
+                android:textStyle="bold"
+                />
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recipe_description"
+                android:layout_marginTop="@dimen/defaultDpMargin"
                 android:textColor="@color/black"
                 android:textSize="@dimen/mediumTextSize"
                 android:maxLines="5"
