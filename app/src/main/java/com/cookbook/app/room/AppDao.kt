@@ -1,6 +1,5 @@
 package com.cookbook.app.room
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -38,5 +37,8 @@ interface AppDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMealRecipes(recipes: List<MealRecipe>)
+
+    @Query("DELETE FROM meal_recipes")
+    suspend fun deleteAllMealRecipes()
 
 }

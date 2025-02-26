@@ -54,22 +54,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentMapBinding.inflate(inflater, container, false)
+        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        mapFragment.getMapAsync(this)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        mapFragment.getMapAsync(this)
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         Constants.startLoading(requireActivity())
         recipeViewModel.allRecipes.observe(requireActivity()) { recipes ->
             if (recipes.isNotEmpty()) {
                 Constants.dismiss()
                 recipesList.clear()
                 recipesList.addAll(recipes)
+
+                if (isAdded) {
+                    showMarkersOnMap()
+                }
             } else {
                 Constants.dismiss()
             }
@@ -139,10 +143,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 15f))
             }
-        }
-
-        if (isAdded) {
-            showMarkersOnMap()
         }
     }
 

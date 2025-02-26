@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.cookbook.app.model.MealRecipe
 import com.cookbook.app.model.Recipe
 import com.cookbook.app.repository.DatabaseRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,6 +22,20 @@ class RecipeViewModel @Inject constructor(
 
     private val _allRecipes = MutableLiveData<List<Recipe>>() // Backing field
     val allRecipes: LiveData<List<Recipe>> get() = _allRecipes // Expose LiveData
+
+    private val _mealRecipes = MutableLiveData<List<MealRecipe>>()
+    val mealRecipes: LiveData<List<MealRecipe>> = _mealRecipes
+
+    fun fetchMealRecipes(query: String) {
+        viewModelScope.launch {
+            delay(2000)
+            databaseRepository.getMealRecipes(query){ recipes ->
+                CoroutineScope(Dispatchers.Main).launch {
+                    _mealRecipes.postValue(recipes)
+                }
+            }
+        }
+    }
 
 
     fun fetchAllRecipes() {

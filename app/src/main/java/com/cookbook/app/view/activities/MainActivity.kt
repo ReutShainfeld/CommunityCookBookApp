@@ -1,6 +1,7 @@
 package com.cookbook.app.view.activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -79,11 +80,16 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.add){
-            navigateToFragment(R.id.action_home_to_add_recipe)
-        }
-        else if (item.itemId == android.R.id.home){
-            navController.popBackStack()
+        when (item.itemId) {
+            R.id.add -> {
+                navigateToFragment(R.id.action_home_to_add_recipe)
+            }
+            R.id.search -> {
+                startActivity(Intent(this,BrowseRecipesActivity::class.java))
+            }
+            android.R.id.home -> {
+                navController.popBackStack()
+            }
         }
         return super.onOptionsItemSelected(item)
     }

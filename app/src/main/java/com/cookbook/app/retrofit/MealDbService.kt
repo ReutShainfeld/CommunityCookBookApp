@@ -1,10 +1,10 @@
 package com.cookbook.app.retrofit
 
-import com.cookbook.app.model.MealRecipe
+import com.cookbook.app.model.MealDbResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface MealDbService {
-    @GET("filter.php")
-    suspend fun getRecipesByCategory(@Query("c") category: String): List<MealRecipe>
+    @GET("search.php")
+    suspend fun getRecipesByCategory(@Query("s") query: String): MealDbResponse
 }
