@@ -57,9 +57,11 @@ class ProfileFragment : Fragment() {
             user = Constants.loggedUser
             if (user != null){
                 Picasso.get().load(user!!.profileImageUrl)
-                    .transform(ExifTransformation(user!!.profileImageUrl!!))
+//                    .transform(ExifTransformation(user!!.profileImageUrl!!))
                     .placeholder(R.drawable.loader)
                     .error(R.drawable.placeholder)
+                    .resize(200,200)
+                    .centerCrop()
                     .into(binding.profileImage)
                 binding.name.setText(user!!.name)
                 binding.email.setText(user!!.email)

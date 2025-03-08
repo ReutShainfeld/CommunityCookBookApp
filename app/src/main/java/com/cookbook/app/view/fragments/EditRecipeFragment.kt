@@ -99,7 +99,7 @@ class EditRecipeFragment : Fragment() {
             if (it.imageUrl!!.isNotEmpty()) {
                 binding.uploadImageWrapper.visibility = View.GONE
                 Picasso.get().load(it.imageUrl)
-                    .transform(ExifTransformation(it.imageUrl!!))
+//                    .transform(ExifTransformation(it.imageUrl!!))
                     .placeholder(R.drawable.loader)
                     .error(R.drawable.placeholder)
                     .into(binding.recipeImage)

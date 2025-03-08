@@ -54,20 +54,25 @@ class RecipeAdapter(private val recipes: MutableList<Recipe>) :
         fun bind(recipe: Recipe) {
             binding.apply {
                     Picasso.get().load(recipe.user?.profileImageUrl)
-                        .transform(ExifTransformation(recipe.user?.profileImageUrl!!))
+//                        .transform(ExifTransformation(recipe.user?.profileImageUrl!!))
                         .placeholder(R.drawable.loader)
                         .error(R.drawable.placeholder)
+                        .resize(200,200)
+                        .centerCrop()
                         .into(userImage)
 
-                userName.text = recipe.user.name
+                userName.text = recipe.user?.name
                 recipeDate.text = Constants.getTimeAgo(recipe.timestamp)
                 if (recipe.imageUrl.isNullOrEmpty()) {
                     recipeImage.visibility = View.GONE
                 } else {
                     recipeImage.visibility = View.VISIBLE
-                    Picasso.get().load(recipe.imageUrl).transform(ExifTransformation(recipe.imageUrl!!))
+                    Picasso.get().load(recipe.imageUrl)
+//                        .transform(ExifTransformation(recipe.imageUrl!!))
                         .placeholder(R.drawable.loader)
                         .error(R.drawable.placeholder)
+                        .resize(600,400)
+                        .centerCrop()
                         .into(recipeImage)
                 }
 

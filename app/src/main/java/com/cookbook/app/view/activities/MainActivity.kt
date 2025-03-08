@@ -42,7 +42,6 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
         setContentView(binding.root)
 
         context = this
-        authViewModel.fetUserDetails(authViewModel.getLoggedUserId())
         CoroutineScope(Dispatchers.IO).launch {
             recipeViewModel.syncOfflineRecipes(this@MainActivity)
             delay(3000)
@@ -58,8 +57,14 @@ class MainActivity : AppCompatActivity(), OnFragmentChangeListener {
         binding.bottomNavigationView.setupWithNavController(navController)
         navController.addOnDestinationChangedListener { _, destination, _ ->
             mainMenu?.findItem(R.id.add)?.isVisible = destination.id == R.id.feedFragment
+            mainMenu?.findItem(R.id.search)?.isVisible = destination.id == R.id.feedFragment
             supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back_arrow)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        authViewModel.fetUserDetails()
     }
 
     private fun setUpToolbar(){

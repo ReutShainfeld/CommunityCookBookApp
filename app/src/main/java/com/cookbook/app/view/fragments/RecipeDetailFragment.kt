@@ -39,15 +39,25 @@ class RecipeDetailFragment : Fragment() {
         recipe = arguments?.getSerializable("recipe") as? Recipe
 
         recipe?.let {
-            Picasso.get().load(it.user?.profileImageUrl).transform(ExifTransformation(it.user?.profileImageUrl!!)).placeholder(R.drawable.placeholder).into(binding.userImage)
-            binding.userName.text = it.user.name
+            Picasso.get().load(it.user?.profileImageUrl)
+//                .transform(ExifTransformation(it.user?.profileImageUrl!!))
+                .placeholder(R.drawable.loader)
+                .error(R.drawable.placeholder)
+                .resize(200,200)
+                .centerCrop()
+                .into(binding.userImage)
+            binding.userName.text = it.user?.name
             binding.recipeDate.text = Constants.getTimeAgo(it.timestamp)
             if (it.imageUrl.isNullOrEmpty()){
                 binding.recipeImage.visibility = View.GONE
             }
             else{
                 binding.recipeImage.visibility = View.VISIBLE
-                Picasso.get().load(it.imageUrl).transform(ExifTransformation(it.imageUrl as String)).placeholder(R.drawable.placeholder).into(binding.recipeImage)
+                Picasso.get().load(it.imageUrl)
+//                    .transform(ExifTransformation(it.imageUrl as String))
+                    .placeholder(R.drawable.loader)
+                    .error(R.drawable.placeholder)
+                    .into(binding.recipeImage)
             }
             binding.recipeTitle.text = it.title
             binding.recipeLocation.text = it.location?.address
