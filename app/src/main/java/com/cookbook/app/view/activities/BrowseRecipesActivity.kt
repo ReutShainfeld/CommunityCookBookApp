@@ -38,7 +38,7 @@ class BrowseRecipesActivity : AppCompatActivity() {
                 allRecipes.clear()
                 allRecipes.addAll(recipes)
             }
-            adapter.notifyItemChanged(0,allRecipes.size) // Update RecyclerView
+            adapter.notifyDataSetChanged()
         }
         recipeViewModel.fetchMealRecipes("")
         binding.searchButton.setOnClickListener {

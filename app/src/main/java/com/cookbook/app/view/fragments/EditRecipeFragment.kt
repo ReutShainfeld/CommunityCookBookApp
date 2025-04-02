@@ -9,7 +9,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,15 +16,13 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.cookbook.app.R
-import com.cookbook.app.databinding.FragmentAddRecipeBinding
 import com.cookbook.app.databinding.FragmentEditRecipeBinding
 import com.cookbook.app.model.Recipe
 import com.cookbook.app.model.RecipeLocation
-import com.cookbook.app.model.User
 import com.cookbook.app.utils.Constants
-import com.cookbook.app.utils.ExifTransformation
 import com.cookbook.app.viewmodel.RecipeViewModel
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -96,12 +93,13 @@ class EditRecipeFragment : Fragment() {
         initPlaces()
 
         recipe?.let {
-            if (it.imageUrl!!.isNotEmpty()) {
+            if (it.imageUrl != null) {
                 binding.uploadImageWrapper.visibility = View.GONE
                 Picasso.get().load(it.imageUrl)
-//                    .transform(ExifTransformation(it.imageUrl!!))
                     .placeholder(R.drawable.loader)
                     .error(R.drawable.placeholder)
+                    .resize(600,400)
+                    .centerCrop()
                     .into(binding.recipeImage)
             }
 

@@ -23,42 +23,54 @@ class DatabaseRepository @Inject constructor(
 ) {
 
     suspend fun getMealRecipes(query: String, callback: (List<MealRecipe>) -> Unit) {
-
         val cachedRecipes = mutableListOf<MealRecipe>()
         cachedRecipes.addAll(appDao.getAllMealRecipes())
-        if (query.isEmpty()){
+
+        // If query is empty, just return cached results immediately.
+        if (query.isEmpty()) {
             callback(cachedRecipes)
+            // If you do *not* want to fetch from network, just return here.
+            // return
         }
 
+        // Launch in IO thread so we don't block the main thread
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                mealDbRepository.fetchRecipes(query) { recipes ->
+                // Fetch from remote
+                mealDbRepository.fetchRecipes(query) { recipesFromApi ->
+                    // Switch again to IO (though we’re *already* in IO)
                     CoroutineScope(Dispatchers.IO).launch {
-                        if (recipes.isNotEmpty()){
+                        if (recipesFromApi.isNotEmpty()) {
+                            // Update local DB
                             appDao.deleteAllMealRecipes()
-                            appDao.insertMealRecipes(recipes)
+                            appDao.insertMealRecipes(recipesFromApi)
+
+                            // Refresh in-memory list from DB
                             cachedRecipes.clear()
                             cachedRecipes.addAll(appDao.getAllMealRecipes())
                         }
+
+                        // Return either the newly cached list (if not empty) or empty
                         if (cachedRecipes.isNotEmpty()) {
                             callback(cachedRecipes)
-                        }
-                        else{
+                        } else {
                             callback(emptyList())
                         }
                     }
                 }
             } catch (exception: Exception) {
                 exception.printStackTrace()
+
+                // On any exception, fallback to last known cache
                 if (cachedRecipes.isNotEmpty()) {
                     callback(cachedRecipes)
-                }
-                else{
+                } else {
                     callback(emptyList())
                 }
             }
         }
     }
+
 
     fun getAllRecipes(callback: (List<Recipe>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {

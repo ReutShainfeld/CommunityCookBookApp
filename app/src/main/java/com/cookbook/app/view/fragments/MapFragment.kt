@@ -137,7 +137,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             location?.let {
-                val currentLatLng = LatLng(it.latitude, it.longitude)
+                val currentLatLng = LatLng(32.109333, 34.855499)
 
                 googleMap.addMarker(MarkerOptions().position(currentLatLng).title("You are here"))
 
