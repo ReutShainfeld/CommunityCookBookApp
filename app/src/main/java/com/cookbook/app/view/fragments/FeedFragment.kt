@@ -22,116 +22,127 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class FeedFragment : Fragment() {
 
-    private lateinit var binding: FragmentFeedBinding
-    private var listener: OnFragmentChangeListener? = null
+    // ----------------------------------------------------
+    // view binding
+    // ----------------------------------------------------
+    private var _binding: FragmentFeedBinding? = null
+    private val binding get() = _binding!!
 
+    // ----------------------------------------------------
+    // VM & helpers
+    // ----------------------------------------------------
     private val recipeViewModel: RecipeViewModel by viewModels()
     private lateinit var recipeAdapter: RecipeAdapter
-    private var recipesList = mutableListOf<Recipe>()
+    private val recipesList = mutableListOf<Recipe>()
 
+    private var listener: OnFragmentChangeListener? = null
+
+    // ----------------------------------------------------
+    // lifecycle
+    // ----------------------------------------------------
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnFragmentChangeListener) {
-            listener = context
-        } else {
-            throw RuntimeException("$context must implement OnFragmentChangeListener")
-        }
+        if (context is OnFragmentChangeListener) listener = context
+        else throw RuntimeException("$context must implement OnFragmentChangeListener")
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFeedBinding.inflate(inflater, container, false)
+        _binding = FragmentFeedBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         setupRecyclerView()
         binding.loadingSpinner.visibility = View.VISIBLE
-        recipeViewModel.allRecipes.observe(requireActivity()) { recipes ->
-            if (recipes.isNotEmpty()) {
-                binding.loadingSpinner.visibility = View.GONE
-                recipesList.clear()
-                recipesList.addAll(recipes)
-                binding.recipesRecyclerview.apply {
-                    visibility = View.VISIBLE
-                }
-                binding.emptyRecipeView.apply {
-                    visibility = View.GONE
-                }
-            } else {
-                binding.loadingSpinner.visibility = View.GONE
-                binding.recipesRecyclerview.apply {
-                    visibility = View.GONE
-                }
-                binding.emptyRecipeView.apply {
-                    visibility = View.VISIBLE
-                }
-            }
-            recipeAdapter.updateRecipes(recipes) // Update RecyclerView
+
+        // 1️⃣  Observe FIRST – we are on the main thread here.
+        recipeViewModel.allRecipes.observe(viewLifecycleOwner) { updateUi(it) }
+
+        // 2️⃣  Kick off Cloud ➜ Room sync, then fetch the list.
+        recipeViewModel.syncFireStoreRecipesWithRoom(requireContext()) { _ ->
+            recipeViewModel.fetchAllRecipes()
         }
-        recipeViewModel.fetchAllRecipes()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    // ----------------------------------------------------
+    // UI helpers
+    // ----------------------------------------------------
+    private fun updateUi(recipes: List<Recipe>) {
+        if (recipes.isNotEmpty()) {
+            binding.loadingSpinner.visibility      = View.GONE
+            binding.emptyRecipeView.visibility     = View.GONE
+            binding.recipesRecyclerview.visibility = View.VISIBLE
+
+            recipesList.clear()
+            recipesList.addAll(recipes)
+            recipeAdapter.updateRecipes(recipes)
+        } else {
+            binding.loadingSpinner.visibility      = View.GONE
+            binding.recipesRecyclerview.visibility = View.GONE
+            binding.emptyRecipeView.visibility     = View.VISIBLE
+        }
     }
 
     private fun setupRecyclerView() {
         recipeAdapter = RecipeAdapter(mutableListOf())
         binding.recipesRecyclerview.apply {
             layoutManager = LinearLayoutManager(requireContext())
-            adapter = recipeAdapter
+            adapter       = recipeAdapter
         }
 
         recipeAdapter.setOnItemClickListener(object : RecipeAdapter.OnItemClickListener {
             override fun onItemClick(position: Int, recipe: Recipe) {
-                val bundle = Bundle().apply {
-                    putSerializable("recipe", recipe)
-                }
-                findNavController().navigate(R.id.action_home_to_recipe_detail, bundle)
+                findNavController().navigate(
+                    R.id.action_home_to_recipe_detail,
+                    Bundle().apply { putSerializable("recipe", recipe) })
             }
 
             override fun onItemEditClick(position: Int, recipe: Recipe) {
-                val bundle = Bundle().apply {
-                    putSerializable("recipe", recipe)
-                }
-                findNavController().navigate(R.id.action_home_to_edit_recipe, bundle)
+                findNavController().navigate(
+                    R.id.action_home_to_edit_recipe,
+                    Bundle().apply { putSerializable("recipe", recipe) })
             }
 
             override fun onItemDeleteClick(position: Int, recipe: Recipe) {
-                val builder = AlertDialog.Builder(requireActivity())
-                builder.setTitle("Delete")
-                    .setMessage("Are you sure you want to delete?")
-                    .setPositiveButton("Delete") { dialog, which ->
-                        dialog.dismiss()
-                        Constants.startLoading(requireActivity())
-                        recipeViewModel.deleteRecipe(requireActivity(),recipe.recipeId) { status, message ->
-                            Constants.dismiss()
-                            if (status) {
-                                recipesList.removeAt(position)
-                                 recipeAdapter.updateRecipes(recipesList)
-                                if (recipesList.isEmpty()){
-                                    binding.recipesRecyclerview.apply {
-                                        visibility = View.GONE
-                                    }
-                                    binding.emptyRecipeView.apply {
-                                        visibility = View.VISIBLE
-                                    }
-                                }
-                                Constants.showAlert(requireActivity(), message!!)
-                            } else {
-                                Constants.showAlert(requireActivity(), message!!)
-                            }
-                        }
-                    }
-                    .setNeutralButton("Cancel") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                val alert = builder.create()
-                alert.show()
+                confirmDelete(position, recipe)
             }
-
-
         })
     }
 
+    // ----------------------------------------------------
+    // delete flow
+    // ----------------------------------------------------
+    private fun confirmDelete(position: Int, recipe: Recipe) {
+        AlertDialog.Builder(requireActivity())
+            .setTitle("Delete")
+            .setMessage("Are you sure you want to delete?")
+            .setPositiveButton("Delete") { d, _ ->
+                d.dismiss()
+                Constants.startLoading(requireActivity())
+
+                recipeViewModel.deleteRecipe(requireActivity(), recipe.recipeId) { ok, msg ->
+                    Constants.dismiss()
+                    if (ok) {
+                        recipesList.removeAt(position)
+                        recipeAdapter.updateRecipes(recipesList)
+                        if (recipesList.isEmpty()) {
+                            binding.recipesRecyclerview.visibility = View.GONE
+                            binding.emptyRecipeView.visibility      = View.VISIBLE
+                        }
+                    }
+                    Constants.showAlert(requireActivity(), msg ?: "Unknown error")
+                }
+            }
+            .setNeutralButton("Cancel") { d, _ -> d.dismiss() }
+            .show()
+    }
 }

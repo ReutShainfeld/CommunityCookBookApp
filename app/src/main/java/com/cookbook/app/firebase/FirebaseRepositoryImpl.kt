@@ -209,37 +209,27 @@ class FirebaseRepositoryImpl @Inject constructor(private val auth: FirebaseAuth,
             }
     }
 
-    override fun getAllRecipeFromFireStore(callback: (Boolean, List<Recipe>?) -> Unit) {
-        val user = auth.currentUser
-        val userId = user?.uid
-
-        if (userId != null) {
-            recipeRef
-                .whereEqualTo("userId", userId) // Optional: Fetch only user-specific recipes
-                .get()
-                .addOnSuccessListener { snapshot ->
-                    if (!snapshot.isEmpty) {
-                        val recipes = snapshot.documents.mapNotNull { document ->
-                            try {
-                                val recipe = document.toObject(Recipe::class.java)
-                                recipe
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                null // Skip invalid documents
-                            }
-                        }
-                        callback(true, recipes)
-                    } else {
-                        callback(false, null) // No recipes found
+    override fun getAllRecipeFromFireStore(
+        callback: (Boolean, List<Recipe>?) -> Unit
+    ) {
+        // Pull the entire collection – no filtering
+        recipeRef
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val recipes = snapshot.documents.mapNotNull { doc ->
+                    try {
+                        doc.toObject(Recipe::class.java)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        null
                     }
                 }
-                .addOnFailureListener { exception ->
-                    exception.printStackTrace()
-                    callback(false, null) // Error occurred
-                }
-        } else {
-            callback(false, null) // User not logged in
-        }
+                callback(true, recipes)           // success (may be empty)
+            }
+            .addOnFailureListener { e ->
+                e.printStackTrace()
+                callback(false, null)             // failure
+            }
     }
 
     override fun getRecipeId(): String {

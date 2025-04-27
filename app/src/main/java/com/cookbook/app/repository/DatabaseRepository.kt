@@ -1,6 +1,5 @@
 package com.cookbook.app.repository
 
-
 import android.content.Context
 import com.cookbook.app.firebase.FirebaseRepository
 import com.cookbook.app.model.MealRecipe
@@ -22,95 +21,74 @@ class DatabaseRepository @Inject constructor(
     private val mealDbRepository: MealDbRepository
 ) {
 
+    /* ──────────────────────────────────────────────────────────── */
+    /*  MEAL-DB HELPERS (unchanged)                                 */
+    /* ──────────────────────────────────────────────────────────── */
+
     suspend fun getMealRecipes(query: String, callback: (List<MealRecipe>) -> Unit) {
-        val cachedRecipes = mutableListOf<MealRecipe>()
-        cachedRecipes.addAll(appDao.getAllMealRecipes())
+        val cache = mutableListOf<MealRecipe>().apply { addAll(appDao.getAllMealRecipes()) }
 
-        // If query is empty, just return cached results immediately.
-        if (query.isEmpty()) {
-            callback(cachedRecipes)
-            // If you do *not* want to fetch from network, just return here.
-            // return
-        }
+        if (query.isEmpty()) callback(cache)      // return cached immediately
 
-        // Launch in IO thread so we don't block the main thread
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Fetch from remote
-                mealDbRepository.fetchRecipes(query) { recipesFromApi ->
-                    // Switch again to IO (though we’re *already* in IO)
+                mealDbRepository.fetchRecipes(query) { fromApi ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        if (recipesFromApi.isNotEmpty()) {
-                            // Update local DB
+                        if (fromApi.isNotEmpty()) {
                             appDao.deleteAllMealRecipes()
-                            appDao.insertMealRecipes(recipesFromApi)
-
-                            // Refresh in-memory list from DB
-                            cachedRecipes.clear()
-                            cachedRecipes.addAll(appDao.getAllMealRecipes())
+                            appDao.insertMealRecipes(fromApi)
+                            cache.apply { clear(); addAll(appDao.getAllMealRecipes()) }
                         }
-
-                        // Return either the newly cached list (if not empty) or empty
-                        if (cachedRecipes.isNotEmpty()) {
-                            callback(cachedRecipes)
-                        } else {
-                            callback(emptyList())
-                        }
+                        callback(if (cache.isNotEmpty()) cache else emptyList())
                     }
                 }
-            } catch (exception: Exception) {
-                exception.printStackTrace()
-
-                // On any exception, fallback to last known cache
-                if (cachedRecipes.isNotEmpty()) {
-                    callback(cachedRecipes)
-                } else {
-                    callback(emptyList())
-                }
+            } catch (_: Exception) {
+                callback(if (cache.isNotEmpty()) cache else emptyList())
             }
         }
     }
 
+    /* ──────────────────────────────────────────────────────────── */
+    /*  LOCAL READ                                                  */
+    /* ──────────────────────────────────────────────────────────── */
 
     fun getAllRecipes(callback: (List<Recipe>) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
             delay(1000)
-            callback(appDao.getAllRecipes())
+            callback(appDao.getAllRecipes())      // returns *everything* in Room
         }
     }
 
-    fun getRecipeId(): String {
-        return firebaseRepository.getRecipeId()
-    }
+    fun getRecipeId(): String = firebaseRepository.getRecipeId()
 
-    fun addRecipe(context: Context, recipe: Recipe, callback: (Boolean, String?) -> Unit) {
+    /* ──────────────────────────────────────────────────────────── */
+    /*  CRUD                                                        */
+    /* ──────────────────────────────────────────────────────────── */
+
+    fun addRecipe(
+        context: Context,
+        recipe: Recipe,
+        callback: (Boolean, String?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 delay(1000)
                 appDao.insertRecipe(recipe.copy(isSynced = false))
 
                 if (NetworkUtils.isOnline(context)) {
-                    firebaseRepository.addRecipeToFireStore(
-                        context,
-                        recipe
-                    ) { success, message, recipe ->
-                        if (success) {
+                    firebaseRepository.addRecipeToFireStore(context, recipe) { ok, msg, updated ->
+                        if (ok) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                if (recipe != null) {
-                                    appDao.updateRecipeSyncStatus(
-                                        recipe.recipeId
-                                    )
+                                updated?.let {
+                                    appDao.updateRecipeSyncStatus(it.recipeId)
                                     delay(1000)
-                                    if (recipe.imageUrl != null) {
-                                        appDao.updateRecipeImage(recipe.recipeId, recipe.imageUrl!!)
+                                    it.imageUrl?.let { url ->
+                                        appDao.updateRecipeImage(it.recipeId, url)
                                     }
                                 }
-
-                                callback(true, message)
+                                callback(true, msg)
                             }
-                        } else {
-                            callback(false, message)
-                        }
+                        } else callback(false, msg)
                     }
                 } else {
                     callback(true, "Saved locally, will sync when online")
@@ -121,39 +99,33 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    fun updateRecipe(context: Context, recipe: Recipe, callback: (Boolean, String?) -> Unit) {
+    fun updateRecipe(
+        context: Context,
+        recipe: Recipe,
+        callback: (Boolean, String?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 delay(1000)
                 appDao.updateRecipe(recipe)
 
                 if (NetworkUtils.isOnline(context)) {
-                    firebaseRepository.updateRecipeToFireStore(
-                        context,
-                        recipe
-                    ) { success, message, recipe ->
-                        if (success) {
+                    firebaseRepository.updateRecipeToFireStore(context, recipe) { ok, msg, updated ->
+                        if (ok) {
                             CoroutineScope(Dispatchers.IO).launch {
-                                if (recipe != null) {
-                                    if (!recipe.isSynced) {
-                                        appDao.updateRecipeSyncStatus(
-                                            recipe.recipeId
-                                        )
-                                    }
+                                updated?.let {
+                                    if (!it.isSynced) appDao.updateRecipeSyncStatus(it.recipeId)
                                     delay(1000)
-                                    if (recipe.imageUrl != null) {
-                                        appDao.updateRecipeImage(recipe.recipeId, recipe.imageUrl!!)
+                                    it.imageUrl?.let { url ->
+                                        appDao.updateRecipeImage(it.recipeId, url)
                                     }
                                 }
-                                callback(true, message)
-
+                                callback(true, msg)
                             }
-                        } else {
-                            callback(false, message)
-                        }
+                        } else callback(false, msg)
                     }
                 } else {
-                    callback(true, "updated locally, will sync when online")
+                    callback(true, "Updated locally, will sync when online")
                 }
             } catch (e: Exception) {
                 callback(false, e.localizedMessage)
@@ -161,23 +133,25 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
-    fun deleteRecipe(context: Context, recipeId: String, callback: (Boolean, String?) -> Unit) {
+    fun deleteRecipe(
+        context: Context,
+        recipeId: String,
+        callback: (Boolean, String?) -> Unit
+    ) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 delay(1000)
                 if (NetworkUtils.isOnline(context)) {
-                    firebaseRepository.deleteRecipeFromFireStore(recipeId) { success, message ->
-                        if (success) {
+                    firebaseRepository.deleteRecipeFromFireStore(recipeId) { ok, msg ->
+                        if (ok) {
                             CoroutineScope(Dispatchers.IO).launch {
                                 appDao.deleteRecipe(recipeId)
-                                callback(success, message)
+                                callback(true, msg)
                             }
-                        } else {
-                            callback(false, message)
-                        }
+                        } else callback(false, msg)
                     }
                 } else {
-                    callback(true, "delete locally, will sync when online")
+                    callback(true, "Deleted locally, will sync when online")
                 }
             } catch (e: Exception) {
                 callback(false, e.localizedMessage)
@@ -185,41 +159,44 @@ class DatabaseRepository @Inject constructor(
         }
     }
 
+    /* ──────────────────────────────────────────────────────────── */
+    /*  SYNC HELPERS                                                */
+    /* ──────────────────────────────────────────────────────────── */
+
+    /** Push locally-created recipes that have not yet hit Firestore */
     fun syncOfflineRecipes(context: Context) {
         CoroutineScope(Dispatchers.IO).launch {
-            if (NetworkUtils.isOnline(context)) {
-                val unsyncedRecipes = appDao.getUnsyncedRecipes()
-                for (recipe in unsyncedRecipes) {
-                    firebaseRepository.addRecipeToFireStore(context, recipe) { success, _, _ ->
-                        if (success) {
-                            CoroutineScope(Dispatchers.IO).launch {
-                                appDao.updateRecipeSyncStatus(recipe.recipeId)
-                            }
-                        }
+            if (!NetworkUtils.isOnline(context)) return@launch
+            appDao.getUnsyncedRecipes().forEach { recipe ->
+                firebaseRepository.addRecipeToFireStore(context, recipe) { ok, _, _ ->
+                    if (ok) CoroutineScope(Dispatchers.IO).launch {
+                        appDao.updateRecipeSyncStatus(recipe.recipeId)
                     }
                 }
             }
         }
     }
 
+    /**
+     * Pull **every** document in the RECIPES collection (no user filter),
+     * insert them into Room (duplicates replaced), then invoke [callback].
+     */
     fun syncFireStoreRecipesWithRoom(context: Context, callback: (Boolean) -> Unit) {
         CoroutineScope(Dispatchers.IO).launch {
-            if (NetworkUtils.isOnline(context)) {
-                firebaseRepository.getAllRecipeFromFireStore() { success, recipes ->
-                    if (success && recipes != null) {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            for (recipe in recipes) {
-                                appDao.insertRecipe(recipe)
-                            }
-                            callback(true)
-                        }
-                    } else {
-                        callback(true)
-                    }
+            if (!NetworkUtils.isOnline(context)) {
+                callback(true); return@launch
+            }
+
+            firebaseRepository.getAllRecipeFromFireStore { ok, list ->
+                if (!ok || list == null) {
+                    callback(false); return@getAllRecipeFromFireStore
                 }
 
-            } else {
-                callback(true)
+                //  ★ move insert to IO so Room is never touched on the UI thread
+                CoroutineScope(Dispatchers.IO).launch {
+                    appDao.insertRecipes(list)            // OnConflictStrategy.REPLACE
+                    callback(true)
+                }
             }
         }
     }
